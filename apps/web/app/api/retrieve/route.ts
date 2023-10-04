@@ -28,8 +28,6 @@ export async function POST(req: Request): Promise<Response> {
     },
   );
 
-  console.log("============================", response.body);
-
   // Respond with the stream
   return new StreamingTextResponse(response.body);
 }
