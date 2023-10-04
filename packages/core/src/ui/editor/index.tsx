@@ -14,7 +14,7 @@ import { EditorBubbleMenu } from "./bubble-menu";
 import { getPrevText } from "@/lib/editor";
 import { ImageResizer } from "./extensions/image-resizer";
 import { EditorProps } from "@tiptap/pm/view";
-import { Editor as EditorClass, Extensions } from "@tiptap/core";
+import { AnyExtension, Editor as EditorClass, Extensions } from "@tiptap/core";
 import { NovelContext } from "./provider";
 
 export default function Editor({
@@ -96,7 +96,7 @@ export default function Editor({
   }, debounceDuration);
 
   const editor = useEditor({
-    extensions: [...defaultExtensions, ...extensions],
+    extensions: [...defaultExtensions, ...extensions] as AnyExtension[],
     editorProps: {
       ...defaultEditorProps,
       ...editorProps,
