@@ -19,3 +19,7 @@ export const getPrevText = (
   );
   // complete(editor.storage.markdown.getMarkdown());
 };
+
+export const getInstruction = (editor: Editor) =>
+  editor.state.doc.childBefore(editor.state.selection.from - 2).node!
+    .textContent;

@@ -25,12 +25,13 @@ import {
   Code,
   CheckSquare,
   Table,
+  BrainCircuit,
 } from "lucide-react";
 import { LoadingCircle } from "@/ui/icons";
 import { toast } from "sonner";
 import va from "@vercel/analytics";
 import { Magic } from "@/ui/icons";
-import { getPrevText } from "@/lib/editor";
+import { getInstruction, getPrevText } from "@/lib/editor";
 import { startImageUpload } from "@/ui/editor/plugins/upload-images";
 import { NovelContext } from "../provider";
 
@@ -80,8 +81,14 @@ const getSuggestionItems = ({ query }: { query: string }) => {
     {
       title: "Continue writing",
       description: "Use AI to expand your thoughts.",
-      searchTerms: ["gpt"],
+      searchTerms: ["gpt", "ai"],
       icon: <Magic className="novel-w-7" />,
+    },
+    {
+      title: "Retrieve data",
+      description: "Use AI to retrieve portfolio data.",
+      searchTerms: ["gpt", "retrieve", "data"],
+      icon: <BrainCircuit size={18} />,
     },
     {
       title: "Send Feedback",
@@ -297,6 +304,16 @@ const CommandList = ({
     },
   });
 
+  const retrieveData = async (prompt: string) => {
+    const res = await fetch("/api/retrieve",
+    {
+      method: "POST",
+      body: JSON.stringify({ prompt }),
+    });
+    const response = await res.json();
+    return response.data;
+  };
+
   const selectItem = useCallback(
     (index: number) => {
       const item = items[index];
@@ -312,12 +329,24 @@ const CommandList = ({
               offset: 1,
             })
           );
+        } else if (item.title === "Retrieve data") {
+          if (isLoading) return;
+          retrieveData(
+            getInstruction(editor)
+          ).then((data) => {
+            editor.chain().focus().deleteRange(range).run();
+            editor.chain().focus().insertContent(data).run();
+            editor.commands.setTextSelection({
+              from: range.from,
+              to: range.from + data.length,
+            });
+          });
         } else {
           command(item);
         }
       }
     },
-    [complete, isLoading, command, editor, items]
+    [complete, isLoading, command, editor, items, range]
   );
 
   useEffect(() => {
@@ -378,7 +407,7 @@ const CommandList = ({
             onClick={() => selectItem(index)}
           >
             <div className="novel-flex novel-h-10 novel-w-10 novel-items-center novel-justify-center novel-rounded-md novel-border novel-border-stone-200 novel-bg-white">
-              {item.title === "Continue writing" && isLoading ? (
+              {isAiCommand(item.title) && isLoading ? (
                 <LoadingCircle />
               ) : (
                 item.icon
@@ -396,6 +425,9 @@ const CommandList = ({
     </div>
   ) : null;
 };
+
+const isAiCommand = (title: string) =>
+  "Retrieve data" === title || "Continue writing" === title;
 
 const renderItems = () => {
   let component: ReactRenderer | null = null;
