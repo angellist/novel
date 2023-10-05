@@ -17,7 +17,7 @@ export async function POST(req: Request): Promise<Response> {
   let { prompt } = await req.json();
 
   const response = await fetch(
-    "https://xgg4923dx7.execute-api.us-west-2.amazonaws.com/prod/agents/call",
+    "https://pzdklk5n55e55da64girnj5t2u0drunb.lambda-url.us-west-2.on.aws/agents/call",
     {
       method: "POST",
       headers: {
