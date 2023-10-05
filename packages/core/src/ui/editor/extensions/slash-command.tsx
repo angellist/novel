@@ -282,6 +282,7 @@ const CommandList = ({
   range: any;
 }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isRetrieving, setIsRetrieving] = useState(false);
 
   const { completionApi } = useContext(NovelContext);
 
@@ -335,9 +336,11 @@ const CommandList = ({
           );
         } else if (item.title === "Retrieve data") {
           if (isLoading) return;
+          setIsRetrieving(true);
           retrieveData(
             getInstruction(editor)
           ).then((data) => {
+            setIsRetrieving(false);
             editor.chain().focus().deleteRange(range).run();
             editor.chain().focus().insertContent(data).run();
             editor.commands.setTextSelection({
@@ -411,7 +414,7 @@ const CommandList = ({
             onClick={() => selectItem(index)}
           >
             <div className="novel-flex novel-h-10 novel-w-10 novel-items-center novel-justify-center novel-rounded-md novel-border novel-border-stone-200 novel-bg-white">
-              {isAiCommand(item.title) && isLoading ? (
+              {"Continue writing" === item.title && isLoading || "Retrieve data" === item.title && isRetrieving ? (
                 <LoadingCircle />
               ) : (
                 item.icon
@@ -429,9 +432,6 @@ const CommandList = ({
     </div>
   ) : null;
 };
-
-const isAiCommand = (title: string) =>
-  "Retrieve data" === title || "Continue writing" === title;
 
 const renderItems = () => {
   let component: ReactRenderer | null = null;
