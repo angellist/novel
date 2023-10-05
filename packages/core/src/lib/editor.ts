@@ -21,5 +21,5 @@ export const getPrevText = (
 };
 
 export const getInstruction = (editor: Editor) =>
-  editor.state.doc.childBefore(editor.state.selection.from - 2).node!
+  editor.state.doc.childBefore(editor.state.selection.from - 10).node!
     .textContent;

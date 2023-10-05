@@ -91,12 +91,30 @@ const getSuggestionItems = ({ query }: { query: string }) => {
       icon: <BrainCircuit size={18} />,
     },
     {
-      title: "Send Feedback",
-      description: "Let us know how we can improve.",
-      icon: <MessageSquarePlus size={18} />,
+      title: "Table",
+      description: "Convert to Table",
+      icon: <Table size={18} />,
       command: ({ editor, range }: CommandProps) => {
-        editor.chain().focus().deleteRange(range).run();
-        window.open("/feedback", "_blank");
+        const csv = getInstruction(editor);
+        const rows = csv.split("\n");
+        const cols = rows[0].split(",");
+        editor
+          .chain()
+          .focus()
+          .deleteRange(range)
+          .insertTable({ rows: rows.length, cols: cols.length, withHeaderRow: true })
+          .run();
+        for (let i = 0; i < rows.length; i++) {
+          const cells = rows[i].split(",");
+          for (let j = 0; j < cells.length; j++) {
+            editor
+              .chain()
+              .focus()
+              .insertContent(cells[j].replace(/"/g, ""))
+              .goToNextCell()
+              .run();
+          }
+        }
       },
     },
     {
@@ -224,20 +242,7 @@ const getSuggestionItems = ({ query }: { query: string }) => {
         };
         input.click();
       },
-    },
-    {
-      title: "Table",
-      description: "Add a table view to organize data.",
-      icon: <Table size={18} />,
-      command: ({ editor, range }: CommandProps) => {
-        editor
-          .chain()
-          .focus()
-          .deleteRange(range)
-          .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
-          .run();
-      },
-    },
+    }
   ].filter((item) => {
     if (typeof query === "string" && query.length > 0) {
       const search = query.toLowerCase();
