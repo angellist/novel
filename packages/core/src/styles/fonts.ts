@@ -2,7 +2,7 @@ import localFont from "next/font/local";
 import { Crimson_Text, Inconsolata, Inter } from "next/font/google";
 
 export const cal = localFont({
-  src: "./CalSans-SemiBold.otf",
+  src: "./AngelList-VF.ttf",
   variable: "--font-title",
 });
 
@@ -36,12 +36,12 @@ export const inconsolata = Inconsolata({
 
 export const titleFontMapper = {
   Default: cal.variable,
-  Serif: crimsonBold.variable,
-  Mono: inconsolataBold.variable,
+  Serif: cal.variable,
+  Mono: cal.variable,
 };
 
 export const defaultFontMapper = {
-  Default: inter.variable,
-  Serif: crimson.variable,
-  Mono: inconsolata.variable,
+  Default: cal.variable,
+  Serif: cal.variable,
+  Mono: cal.variable,
 };
